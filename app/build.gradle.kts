@@ -8,12 +8,13 @@ android {
 
     defaultConfig {
         applicationId = "com.hygnus.spectre"
-        minSdk = 26
+        minSdk = 28
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 42
+        versionName = "1.8.0.241103"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        versionNameSuffix = "Dev-Graphite"
     }
 
     buildTypes {
@@ -35,6 +36,7 @@ dependencies {
 
     implementation(libs.appcompat)
     implementation(libs.material)
+    implementation(libs.datastore.core.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
