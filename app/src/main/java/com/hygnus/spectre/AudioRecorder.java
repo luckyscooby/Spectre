@@ -1,5 +1,6 @@
 package com.hygnus.spectre;
 
+import android.annotation.SuppressLint;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -20,26 +21,26 @@ public class AudioRecorder {
     private static final int ENCODING = AudioFormat.ENCODING_PCM_16BIT;
     private static final int bufferSize = AudioRecord.getMinBufferSize(SAMPLING_RATE, CHANNEL_IN, ENCODING);
     private static final byte[] audioSample = new byte[bufferSize];
-    private static final AudioRecord audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION,
-            SAMPLING_RATE, CHANNEL_IN, ENCODING, bufferSize);
+    private static AudioRecord audioRecord = null;
     private static String currentAudioFile = "";
     private static final String TAG = "AudioRecorder";
 
+    @SuppressLint("MissingPermission")
     public static void start() {
         if (audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
             return;
         }
         try {
+            if (audioRecord == null) {
+                audioRecord = new AudioRecord(MediaRecorder.AudioSource.VOICE_RECOGNITION,
+                        SAMPLING_RATE, CHANNEL_IN, ENCODING, bufferSize);
+            }
             audioRecord.startRecording();
 
             Thread thread = new Thread(AudioRecorder::writeToDisk);
             thread.start();
         } catch (Exception e) {
-            // Handle exceptions appropriately (e.g., log, display error message)
-            Log.e(TAG, "Error starting recording", e);
-            // Consider using a tone generator or vibrator for feedback
-            // Kernel.beep(Tone.CdmaSoftErrorLite);
-            Storage.logException(e);
+            Kernel.handleException(e);
         }
     }
 
@@ -50,23 +51,19 @@ public class AudioRecorder {
         try {
             audioRecord.stop();
         } catch (Exception e) {
-            // Handle exceptions appropriately (e.g., log, display error message)
-            Log.e(TAG, "Error stopping recording", e);
-            // Consider using a tone generator or vibrator for feedback
-            // Kernel.beep(Tone.CdmaSoftErrorLite);
-            Storage.logException(e);
+            Kernel.handleException(e);
         }
     }
 
     public static void schedule() {
          // Get current time using Calendar or other suitable methods
          Calendar now = Calendar.getInstance();
-         if (now.get(Calendar.HOUR_OF_DAY) == 0 && now.get(Calendar.MINUTE) == 0) {
-             stop();
-             start();
-         } else {
-             start();
-         }
+        if (now.get(Calendar.HOUR_OF_DAY) == 0 && now.get(Calendar.MINUTE) == 0) {
+            stop();
+            start();
+        } else {
+            start();
+        }
     }
 
     private static void writeToDisk() {
@@ -74,40 +71,39 @@ public class AudioRecorder {
             // Create new audio file
             currentAudioFile = Storage.MEDIA_AUDIO_DIRECTORY + "/" + SettingDriver.getFormattedDateTime() + Storage.MEDIA_AUDIO_FILE_EXTENSION;
             File file = new File(currentAudioFile);
-            file.createNewFile(); // Ensure the file is created
+            boolean result = file.createNewFile(); // Ensure the file is created
 
-            try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-                // PCM sample data flushing loop
-                while (audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-                    int bytesRead = audioRecord.read(audioSample, 0, bufferSize);
-                    if (bytesRead > 0) {
-                        try {
-                            fileOutputStream.write(audioSample, 0, bytesRead);
-                            fileOutputStream.flush();
-                        } catch (IOException e) {
-                            // Ignore errors; this will create gaps in audio file for each error, but prevent full session failure
-                            Log.w(TAG, "Error writing audio data", e);
+            if (result) {
+                try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+                    // PCM sample data flushing loop
+                    while (audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+                        int bytesRead = audioRecord.read(audioSample, 0, bufferSize);
+                        if (bytesRead > 0) {
+                            try {
+                                fileOutputStream.write(audioSample, 0, bytesRead);
+                                fileOutputStream.flush();
+                            } catch (IOException e) {
+                                // Ignore errors; this will create gaps in audio file for each error, but prevent full session failure
+                                Log.w(TAG, "Error writing audio data", e);
+                            }
+                        }
+
+                        if (file.length() >= Storage.MEDIA_AUDIO_MAX_SIZE) {
+                            fileOutputStream.close();
+                            writeWavHeader();
+                            writeToDisk(); // Start a new file
+                            return; // Exit the current writeToDisk call
                         }
                     }
 
-                    if (file.length() >= Storage.MEDIA_AUDIO_MAX_SIZE) {
-                        fileOutputStream.close();
-                        writeWavHeader();
-                        writeToDisk(); // Start a new file
-                        return; // Exit the current writeToDisk call
-                    }
+                    // After loop finished (RecordState.Stopped)
+                    fileOutputStream.close();
+                    writeWavHeader();
+                    // Thread is ended
                 }
-
-                // After loop finished (RecordState.Stopped)
-                fileOutputStream.close();
-                writeWavHeader();
             }
         } catch (Exception e) {
-            // Handle exceptions appropriately (e.g., log, display error message)
-            Log.e(TAG, "Error writing audio to disk", e);
-            // Consider using a tone generator or vibrator for feedback
-            // Kernel.beep(Tone.CdmaSoftErrorLite);
-            Storage.logException(e);
+            Kernel.handleException(e);
         }
     }
 
