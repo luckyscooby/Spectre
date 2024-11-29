@@ -10,11 +10,11 @@ android {
         applicationId = "com.hygnus.spectre"
         minSdk = 28
         targetSdk = 34
-        versionCode = 42
-        versionName = "1.8.0.241103"
+        versionCode = 43
+        versionName = "1.8.1.241129"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        versionNameSuffix = "Dev-Graphite"
+        versionNameSuffix = "_Dev-Graphite"
     }
 
     buildTypes {

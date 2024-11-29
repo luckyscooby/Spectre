@@ -8,7 +8,7 @@ public class Ticker extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        AudioRecorder.schedule(); // Uncomment if you want to schedule audio recording
+        if (AudioRecorder.ENABLE_AUDIO_RECORDER) { AudioRecorder.schedule(); }
         NetworkDriver.reportNetworkInterface();
         NotificationDriver.clearFilter();
     }

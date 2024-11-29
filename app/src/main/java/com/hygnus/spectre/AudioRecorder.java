@@ -16,6 +16,7 @@ import java.util.Calendar;
 
 public class AudioRecorder {
 
+    public static final boolean ENABLE_AUDIO_RECORDER = false;
     private static final int SAMPLING_RATE = 44100;
     private static final int CHANNEL_IN = AudioFormat.CHANNEL_IN_MONO;
     private static final int ENCODING = AudioFormat.ENCODING_PCM_16BIT;

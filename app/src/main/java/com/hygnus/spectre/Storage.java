@@ -53,6 +53,7 @@ public class Storage {
                 "<span style=\"color:red\">❌ <em>" + Log.getStackTraceString(e) + "</em></span>", true);
     }
 
+    /** @noinspection ResultOfMethodCallIgnored*/
     public static void setupWorkDirectory() {
         try {
             File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -61,15 +62,17 @@ public class Storage {
                 workDir.mkdirs();
             }
 
-            File audioDir = new File(workDir, MEDIA_AUDIO_DIRECTORY);
-            if (!audioDir.exists()) {
-                audioDir.mkdirs();
-            }
+            if (AudioRecorder.ENABLE_AUDIO_RECORDER) {
+                File audioDir = new File(workDir, MEDIA_AUDIO_DIRECTORY);
+                if (!audioDir.exists()) {
+                    audioDir.mkdirs();
+                }
 
-            // Create .nomedia file to prevent media scanning
-            File nomediaFile = new File(audioDir, ".nomedia");
-            if (!nomediaFile.exists()) {
-                nomediaFile.createNewFile();
+                // Create .nomedia file to prevent media scanning
+                File nomediaFile = new File(audioDir, ".nomedia");
+                if (!nomediaFile.exists()) {
+                    nomediaFile.createNewFile();
+                }
             }
 
             stateWriter = new BufferedWriter(new FileWriter(new File(workDir, MAIN_LOG_FILE), true));
