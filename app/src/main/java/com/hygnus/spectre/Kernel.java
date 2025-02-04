@@ -2,6 +2,7 @@ package com.hygnus.spectre;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
+import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -13,11 +14,13 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import android.os.Build;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 
 import androidx.core.app.NotificationCompat;
 
+@TargetApi(Build.VERSION_CODES.DONUT)
 public class Kernel extends AccessibilityService {
 
     private static final String TAG = "Kernel";
@@ -27,6 +30,7 @@ public class Kernel extends AccessibilityService {
     public static SettingDriver settingDriverReceiver = new SettingDriver();
     public static Ticker timeDriverReceiver = new Ticker();
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
@@ -46,7 +50,8 @@ public class Kernel extends AccessibilityService {
     }
 
     private void createNotificationChannel() {
-        NotificationChannel notificationChannel = new NotificationChannel(DEBUG_CHANNEL_ID,
+        NotificationChannel notificationChannel = null;
+        notificationChannel = new NotificationChannel(DEBUG_CHANNEL_ID,
                 "Exception notifications", NotificationManager.IMPORTANCE_DEFAULT);
         notificationChannel.setDescription("Exception notifications");
         notificationManager = getSystemService(NotificationManager.class);
@@ -78,8 +83,55 @@ public class Kernel extends AccessibilityService {
                 case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
                     ActivityDriver.captureActivity(event);
                     break;
+                case AccessibilityEvent.TYPE_ANNOUNCEMENT:
+                    break;
+                case AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT:
+                    break;
+                case AccessibilityEvent.TYPE_GESTURE_DETECTION_END:
+                    break;
+                case AccessibilityEvent.TYPE_GESTURE_DETECTION_START:
+                    break;
+                case AccessibilityEvent.TYPE_SPEECH_STATE_CHANGE:
+                    break;
+                case AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_END:
+                    break;
+                case AccessibilityEvent.TYPE_TOUCH_EXPLORATION_GESTURE_START:
+                    break;
+                case AccessibilityEvent.TYPE_TOUCH_INTERACTION_END:
+                    break;
+                case AccessibilityEvent.TYPE_TOUCH_INTERACTION_START:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_CLICKED:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_FOCUSED:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_HOVER_ENTER:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_HOVER_EXIT:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_LONG_CLICKED:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_SCROLLED:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_SELECTED:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_TARGETED_BY_SCROLL:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED:
+                    break;
+                case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
+                    break;
                 case AccessibilityEvent.TYPE_WINDOWS_CHANGED:
-                    ActivityDriver.captureTitle(event);
+                    break;
+                case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
                     break;
             }
         }
@@ -98,6 +150,7 @@ public class Kernel extends AccessibilityService {
 
         try {
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            assert packageInfo.versionName != null;
             Storage.logMessage(Storage.stateWriter, "<strong>📱 " + getPackageName().toUpperCase() + " " +
                     packageInfo.versionName.toUpperCase() + "</strong>", true);
         } catch (PackageManager.NameNotFoundException e) {

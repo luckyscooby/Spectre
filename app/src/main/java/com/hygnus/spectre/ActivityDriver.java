@@ -3,7 +3,6 @@ package com.hygnus.spectre;
 import android.content.ComponentName;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.view.accessibility.AccessibilityEvent;
 
 public class ActivityDriver {
@@ -12,13 +11,9 @@ public class ActivityDriver {
 
     public static void captureActivity(AccessibilityEvent event) {
         CharSequence packageName = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.DONUT) {
-            packageName = event.getPackageName();
-        }
+        packageName = event.getPackageName();
         CharSequence className = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.DONUT) {
-            className = event.getClassName();
-        }
+        className = event.getClassName();
 
         if (packageName != null && className != null) {
             try {

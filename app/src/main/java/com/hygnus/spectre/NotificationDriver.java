@@ -1,5 +1,6 @@
 package com.hygnus.spectre;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.database.Cursor;
 import android.net.Uri;
@@ -27,11 +28,13 @@ public class NotificationDriver {
     private static int filterTicker = 0;
 
     public static void captureNotification(AccessibilityEvent event) {
-        Parcelable parcelableData = event.getParcelableData();
+        Parcelable parcelableData = null;
+        parcelableData = event.getParcelableData();
         if (parcelableData instanceof Notification) {
             try {
                 Notification notification = (Notification) parcelableData;
-                Bundle extras = notification.extras;
+                Bundle extras = null;
+                extras = notification.extras;
 
                 notificationBlock.packageName = event.getPackageName() != null ? event.getPackageName().toString() : "[null]";
                 notificationBlock.title = extras.getString("android.title") != null ? extras.getString("android.title") : "[null]";
@@ -124,6 +127,7 @@ public class NotificationDriver {
         }
     }
 
+    @SuppressLint("Range")
     public static String retrieveContactName(String phoneNumber) {
         try (Cursor cursor = Kernel.serviceContext.getContentResolver().query(
                 Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber)),
