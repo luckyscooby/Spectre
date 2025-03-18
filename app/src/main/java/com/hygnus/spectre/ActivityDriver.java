@@ -1,41 +1,28 @@
 package com.hygnus.spectre;
 
-import android.content.ComponentName;
-import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.view.accessibility.AccessibilityEvent;
 
 public class ActivityDriver {
-    private static String applicationLabel = "";
     private static String lastActivity = "";
 
+    private static String getAppName(String packageName) {
+        PackageManager pm = Kernel.serviceContext.getPackageManager();
+        try {
+            ApplicationInfo ai = pm.getApplicationInfo(packageName, 0);
+            return (String) pm.getApplicationLabel(ai);
+        } catch (PackageManager.NameNotFoundException e) {
+            return packageName;
+        }
+    }
+
     public static void captureActivity(AccessibilityEvent event) {
-        CharSequence packageName = null;
-        packageName = event.getPackageName();
-        CharSequence className = null;
-        className = event.getClassName();
-
-        if (packageName != null && className != null) {
-            try {
-                ComponentName componentName = new ComponentName(packageName.toString(), className.toString());
-                ActivityInfo activityInfo = Kernel.serviceContext.getPackageManager().getActivityInfo(componentName, 0);
-
-                if (!componentName.flattenToShortString().equals(lastActivity)) {
-                    lastActivity = componentName.flattenToShortString();
-
-                    try {
-                        applicationLabel = activityInfo.loadLabel(Kernel.serviceContext.getPackageManager()).toString();
-                    } catch (Exception e) {
-                        Kernel.handleException(e, false, false); // No beep, no notification
-                    }
-
-                    Storage.logMessage(Storage.stateWriter, "<span style=\"color:hotpink\"><strong>" +
-                            applicationLabel + "</strong> [" + componentName.getClassName() + "]</span>", true);
-
-                }
-            } catch (PackageManager.NameNotFoundException e) {
-                Kernel.handleException(e, false, false); // No beep, no notification
-            }
+        String packageName = event.getPackageName() != null ? event.getPackageName().toString() : "Unknown";
+        if (!packageName.equals(lastActivity)) {
+            lastActivity = packageName;
+            Storage.logMessage(Storage.stateWriter, "<span style=\"color:hotpink\"><strong>" +
+                    getAppName(packageName) + "</strong></span><span style=\"color:PaleVioletRed\"> [" + packageName + "]</span>", true);
         }
     }
 }

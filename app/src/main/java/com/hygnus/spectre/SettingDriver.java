@@ -43,25 +43,26 @@ public class SettingDriver extends BroadcastReceiver {
                     }
                     break;
                 case Intent.ACTION_POWER_CONNECTED:
-                    Storage.logMessage(Storage.stateWriter, "<span style=\"color:gainsboro\">⚡ CHARGING @ " + getBatteryLevel(context) + "</span>", true);
+                    Storage.logMessage(Storage.stateWriter, "<span style=\"color:Khaki\">⚡ CHARGING @ " + getBatteryLevel(context) + "</span>", true);
                     break;
                 case Intent.ACTION_POWER_DISCONNECTED:
-                    Storage.logMessage(Storage.stateWriter, "<span style=\"color:gainsboro\">⚡ DISCHARGING @ " + getBatteryLevel(context) + "</span>", true);
+                    Storage.logMessage(Storage.stateWriter, "<span style=\"color:Khaki\">⚡ DISCHARGING @ " + getBatteryLevel(context) + "</span>", true);
                     break;
                 case Intent.ACTION_BATTERY_LOW:
-                    Storage.logMessage(Storage.stateWriter, "<span style=\"color:orange\">⚡ BATTERY LOW/SAVING MODE @ " + getBatteryLevel(context) + "</span>", true);
+                    Storage.logMessage(Storage.stateWriter, "<span style=\"color:orange\">🪫 BATTERY LOW / SAVING MODE @ " + getBatteryLevel(context) + "</span>", true);
                     break;
                 case Intent.ACTION_SHUTDOWN:
-                    Storage.logMessage(Storage.stateWriter, "<strong><span style=\"color:black\">♻️ SHUTDOWN @ " + getBatteryLevel(context) + "</span></strong>", true);
+                case Intent.ACTION_REBOOT:
+                    Storage.logMessage(Storage.stateWriter, "<strong><span style=\"color:black\">📴 SHUTDOWN / REBOOT @ " + getBatteryLevel(context) + "</span></strong>", true);
                     Kernel.terminate();
                     break;
                 case Intent.ACTION_AIRPLANE_MODE_CHANGED:
-                    Storage.logMessage(Storage.stateWriter, "<span style=\"color:indianred\">🛑 AIRPLANE MODE [" + isAirplaneModeOn(context) + "]</span>", true);
+                    Storage.logMessage(Storage.stateWriter, "<span style=\"color:indianred\">✈️ AIRPLANE MODE [" + isAirplaneModeOn(context) + "]</span>", true);
                     break;
                 case LocationManager.MODE_CHANGED_ACTION:
                     int currentGPSState = getGPSProviderState(context);
                     if (currentGPSState != previousGPSState) {
-                        Storage.logMessage(Storage.stateWriter, "<span style=\"color:indianred\">🛑 GPS PROVIDER [" + currentGPSState + "]</span>", true);
+                        Storage.logMessage(Storage.stateWriter, "<span style=\"color:indianred\">🛰️ GPS PROVIDER [" + currentGPSState + "]</span>", true);
                         previousGPSState = currentGPSState;
                     }
                     break;

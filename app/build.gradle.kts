@@ -8,13 +8,13 @@ android {
 
     defaultConfig {
         applicationId = "com.hygnus.spectre"
-        minSdk = 28
+        minSdk = 34
         targetSdk = 35
-        versionCode = 43
-        versionName = "1.8.2.250204"
+        versionCode = 45
+        versionName = "1.9.0.250313"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        versionNameSuffix = "_Dev-Graphite"
+        versionNameSuffix = ".dev"
     }
 
     buildTypes {
@@ -27,8 +27,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
@@ -41,4 +41,9 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
